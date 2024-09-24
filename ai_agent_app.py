@@ -97,4 +97,8 @@ else:
            with st.chat_message("assistant"):
                 response = st.write(stream) 
         st.session_state.messages.append({"role": "assistant", "content": response})
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 7f32fb50c0fdfe8770a330017e23493eeec4b7e8
