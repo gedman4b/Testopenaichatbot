@@ -96,5 +96,5 @@ else:
         else:
            with st.chat_message("assistant"):
                 response = st.write(stream) 
-        st.session_state.messages.append({"role": "assistant", "content": response})
+           st.session_state.messages.append({"role": "assistant", "content": response})
     
