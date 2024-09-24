@@ -33,10 +33,10 @@ def get_predefined_response(user_question):
         if user_question.lower() == item['question'].lower():
             return item['answer']
     # If no predefined answer, call GPT for a fallback response
-    return get_fallback_response(user_question)
+    return None
 
 # Show title and description.
-st.title("💬 Chatbot")
+st.title("💬 Customer Support AI Agent")
 st.write(
     "This is a simple chatbot that uses OpenAI's GPT-4o-mini model to generate responses. "
     "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
@@ -66,37 +66,35 @@ else:
 
     # Create a chat input field to allow the user to enter a message. This will display
     # automatically at the bottom of the page.
+    st.write("\n\n\n\n")
+    st.write(
+        "Ask a question about Power AI:"
+        )
     if prompt := st.chat_input("Hello there. How can I help you?"):
 
         # Store and display the current prompt.
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
+        
+        stream = get_predefined_response(prompt)
+        if stream == None:
+            # Generate a response usin(g the OpenAI API.
+            stream = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": m["role"], "content": m["content"]}
+                    for m in st.session_state.messages
+                ],
+                stream=True,
+            )
 
-        # Generate a response using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
-        )
-
-        # Stream the response to the chat using `st.write_stream`, then store it in 
-        # session state.
-        with st.chat_message("assistant"):
-            response = st.write_stream(stream)
+            # Stream the response to the chat using `st.write_stream`, then store it in 
+            # session state.
+            with st.chat_message("assistant"):
+                response = st.write_stream(stream)
+        else:
+           with st.chat_message("assistant"):
+                response = st.write(stream) 
         st.session_state.messages.append({"role": "assistant", "content": response})
-
-        # Streamlit app UI
-st.title("Customer Support AI Agent")
-
-# User input
-user_input = st.text_input("Ask a question about Power AI:")
-
-# Display output when user enters a question
-if user_input:
-    # Get the predefined answer
-    response = get_predefined_response(user_input)
-    st.write(f"Answer: {response}")
+    
