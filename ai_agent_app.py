@@ -32,7 +32,7 @@ def get_predefined_response(user_question):
     for item in data['questions']:
         if user_question.lower() == item['question'].lower():
             return item['answer']
-    # If no predefined answer, call GPT for a fallback response
+    
     return None
 
 # Show title and description.
@@ -77,6 +77,7 @@ else:
             st.markdown(prompt)
         
         response = get_predefined_response(prompt)
+        
         if response == None:
             # Generate a response usin(g the OpenAI API.
             stream = client.chat.completions.create(
@@ -95,6 +96,7 @@ else:
                 st.session_state.messages.append({"role": "assistant", "content": response})
         else:
            with st.chat_message("assistant"):
-                new_response = st.write(response) 
-                st.session_state.messages.append({"role": "assistant", "content": new_response})
+                st.write(response)
+                st.session_state.messages.append({"role": "assistant", "content": response})
+       
     
