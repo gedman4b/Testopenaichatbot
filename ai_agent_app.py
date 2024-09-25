@@ -77,8 +77,8 @@ else:
         with st.chat_message("user"):
             st.markdown(prompt)
         
-        stream = get_predefined_response(prompt)
-        if stream == None:
+        response = get_predefined_response(prompt)
+        if response == None:
             # Generate a response usin(g the OpenAI API.
             stream = client.chat.completions.create(
                 model="gpt-4o-mini",
@@ -93,8 +93,9 @@ else:
             # session state.
             with st.chat_message("assistant"):
                 response = st.write_stream(stream)
+                st.session_state.messages.append({"role": "assistant", "content": response})
         else:
            with st.chat_message("assistant"):
-                response = st.write(stream) 
-           st.session_state.messages.append({"role": "assistant", "content": response})
+                new_response = st.write(response) 
+                st.session_state.messages.append({"role": "assistant", "content": new_response})
     
